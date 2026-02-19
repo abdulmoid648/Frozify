@@ -15,3 +15,43 @@ body {
   background-color: rgba(59, 130, 246, 0.3);
   color: white;
 }
+
+@keyframes float-container {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  33% {
+    transform: translateY(-5px) rotate(0.5deg);
+  }
+
+  66% {
+    transform: translateY(2px) rotate(-0.5deg);
+  }
+
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+.animate-float {
+  animation: float-container 8s ease-in-out infinite;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+}
+
+
+.carousel-item {
+  flex: 0 0 100%;
+  padding: 0 1rem;
+}
+
+@media (min-width: 768px) {
+  .carousel-item {
+    flex: 0 0 33.333333%;
+  }
+}
