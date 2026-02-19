@@ -116,9 +116,15 @@ const Home = () => {
             </section>
 
 
-            {/* Services/Menu Preview Section */}
-            <section id="menu" className="py-32 px-6 md:px-12 relative overflow-hidden">
+            <section id="menu" className="py-32 px-6 md:px-12 relative overflow-hidden bg-black">
                 <div className="max-w-7xl mx-auto relative">
+                    <div className="flex flex-col md:flex-row items-end justify-between mb-20 gap-8">
+                        <div>
+                            <span className="text-white font-black tracking-widest text-xs uppercase mb-4 block">Our Specialties</span>
+                            <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase line-clamp-2">Featured <br /><span className="text-gray-600">Delights</span></h2>
+                        </div>
+                        <p className="text-gray-500 max-w-sm font-medium">A curated selection of our most popular frozen snacks, ready to heat and eat.</p>
+                    </div>
 
                     <div className="relative">
                         {/* Navigation Arrows */}
@@ -137,9 +143,9 @@ const Home = () => {
                             <ChevronRight className="w-6 h-6" />
                         </button>
 
-                        <div className="overflow-hidden">
+                        <div className="overflow-visible">
                             <div
-                                className="carousel-track"
+                                className="carousel-track py-8"
                                 style={{
                                     transform: `translateX(-${activeIndex * (100 / itemsPerPage)}%)`,
                                     transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
@@ -178,9 +184,21 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* About Section (Full Integration) */}
             <section id="about" className="py-32 px-6 md:px-12 bg-black border-t border-white/5">
                 <div className="max-w-7xl mx-auto">
+                    <div className="text-center mb-24">
+                        <motion.h1
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            className="text-6xl md:text-8xl font-black text-white mb-8 tracking-tighter"
+                        >
+                            OUR <span className="text-gray-600">STORY</span>
+                        </motion.h1>
+                        <p className="text-xl text-gray-500 max-w-2xl mx-auto font-medium leading-relaxed">
+                            Frozify was born from a simple mission: to preserve the soul of gourmet cooking in every frozen bite.
+                        </p>
+                    </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-32">
                         <div className="space-y-8">
@@ -192,12 +210,13 @@ const Home = () => {
                                 Every samosa, kebab, and roll is handcrafted by our team of expert chefs using only organic, locally-sourced ingredients. We don't use stabilizers, artificial colors, or MSG—just pure, honest food.
                             </p>
                         </div>
-                        <div className="aspect-video rounded-[2.5rem] overflow-hidden border border-white/5 relative group bg-white/5 flex items-center justify-center p-12">
+                        <div className="aspect-video rounded-[2.5rem] overflow-hidden border border-white/5 relative group">
                             <img
                                 src={logo}
                                 alt="Logo"
-                                className="w-full h-full object-contain transition-transform duration-1000 group-hover:scale-90"
+                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                             />
+                            <div className="absolute inset-0 bg-white/5 mix-blend-overlay" />
                         </div>
 
                     </div>
