@@ -1,91 +1,186 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useParams } from 'react-router-dom';
-import { ShoppingCart, Plus, Star } from 'lucide-react';
+import { useParams, Link } from 'react-router-dom';
+import { ShoppingCart, Plus, Star, Loader2, ChevronRight } from 'lucide-react';
+import { getProducts } from '../api/productService';
+import { getCategories } from '../api/categoryService';
 
 const FrozenItems = () => {
     const { category } = useParams();
+    const [items, setItems] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Mock items - in a real app these could come from a data file or API
-    const items = [
-        { id: 1, name: "Premium Samosas", price: "450", rating: 4.8, img: "https://images.unsplash.com/photo-1601050638917-3f048d0a0b6d?auto=format&fit=crop&q=80&w=400" },
-        { id: 2, name: "Spring Rolls", price: "380", rating: 4.6, img: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=400" },
-        { id: 3, name: "Chicken Seekh Kabab", price: "620", rating: 4.9, img: "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&q=80&w=400" },
-        { id: 4, name: "Aloo Paratha", price: "250", rating: 4.5, img: "https://images.unsplash.com/photo-1626132646529-5006375bc9fa?auto=format&fit=crop&q=80&w=400" },
-        { id: 5, name: "Shami Kabab", price: "550", rating: 4.7, img: "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&q=80&w=400" },
-        { id: 6, name: "Cheese Samosa", price: "480", rating: 4.9, img: "https://images.unsplash.com/photo-1601050638917-3f048d0a0b6d?auto=format&fit=crop&q=80&w=400" },
-    ];
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const [productsRes, categoriesRes] = await Promise.all([
+                    getProducts(),
+                    getCategories()
+                ]);
+
+                if (productsRes.success) {
+                    setItems(productsRes.data);
+                } else {
+                    setError('Failed to load products');
+                }
+
+                if (categoriesRes.success) {
+                    setCategories(categoriesRes.data);
+                }
+            } catch (err) {
+                setError(err.error || 'Server connection error');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    // Helper to get image URL
+    const getImageUrl = (imagePath) => {
+        if (!imagePath || imagePath === 'no-photo.jpg' || imagePath === '') {
+            return `https://images.unsplash.com/photo-1601050638917-3f048d0a0b6d?auto=format&fit=crop&q=80&w=400`;
+        }
+        if (imagePath.startsWith('http')) return imagePath;
+        return `http://localhost:5000${imagePath}`;
+    };
+
+    // Filter items by category if one is specified in the URL
+    const filteredItems = category
+        ? items.filter(item => item.category.toLowerCase() === category.toLowerCase())
+        : items;
+
+    // Group items by category for the "All Items" view
+    const groupedItems = categories.map(cat => ({
+        ...cat,
+        products: items.filter(item => item.category.toLowerCase() === cat.name.toLowerCase())
+    })).filter(group => group.products.length > 0);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <Loader2 className="w-12 h-12 text-white animate-spin opacity-20" />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-black flex flex-col items-center justify-center text-center px-6">
+                <h2 className="text-3xl font-black text-white mb-4">Oops!</h2>
+                <p className="text-gray-500 mb-8 max-w-md">{error}</p>
+                <button
+                    onClick={() => window.location.reload()}
+                    className="px-8 py-3 bg-white text-black rounded-xl font-bold hover:bg-gray-200 transition-all"
+                >
+                    Try Again
+                </button>
+            </div>
+        );
+    }
+
+    const ProductCard = ({ item }) => (
+        <motion.div
+            key={item._id}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-zinc-950 rounded-[2rem] border border-white/5 overflow-hidden group hover:border-white/30 transition-all duration-500 h-full"
+        >
+            <div className="aspect-[4/3] overflow-hidden relative">
+                <img
+                    src={getImageUrl(item.image)}
+                    alt={item.name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute top-6 right-6 z-10">
+                    <div className="bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center space-x-1.5">
+                        <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                        <span className="text-white text-xs font-black">4.8</span>
+                    </div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+            </div>
+
+            <div className="p-8">
+                <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-2xl font-bold text-white group-hover:text-gray-400 transition-colors uppercase tracking-tight">{item.name}</h3>
+                    <span className="text-2xl font-black text-white tracking-tighter shrink-0 ml-4">
+                        <span className="text-sm text-gray-500 font-bold mr-1">Rs.</span>
+                        {item.price}
+                    </span>
+                </div>
+                <p className="text-gray-500 text-sm line-clamp-2 mb-6">
+                    {item.description}
+                </p>
+                <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                    <div className="flex -space-x-2">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="w-8 h-8 rounded-full border-2 border-zinc-950 bg-zinc-800" />
+                        ))}
+                    </div>
+                    <button className="flex items-center space-x-2 bg-white text-black px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-200 transition-all active:scale-95 shadow-lg shadow-white/10">
+                        <Plus className="w-4 h-4" />
+                        <span>Add To Cart</span>
+                    </button>
+                </div>
+            </div>
+        </motion.div>
+    );
 
     return (
         <div className="pt-40 pb-24 px-6 md:px-12 min-h-screen bg-black">
             <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-                    <div>
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 border-b border-white/5 pb-16">
+                    <div className="max-w-3xl">
                         <motion.h1
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter capitalize"
+                            className="text-6xl md:text-8xl font-black text-white mb-6 tracking-tighter capitalize italic"
                         >
                             {category || 'ALL ITEMS'}
                         </motion.h1>
-                        <p className="text-xl text-gray-500 max-w-2xl font-medium">
-                            Browse our full collection of premium frozen treats, individually flash-frozen for peak perfection.
+                        <p className="text-xl text-gray-400 font-medium leading-relaxed">
+                            {filteredItems.length === 0
+                                ? `Our chefs are preparing fresh stock for ${category}. Check back very soon!`
+                                : `Experience the peak of fresh-frozen technology. Every item is flash-frozen at sub-zero temperatures to lock in every note of flavor.`}
                         </p>
                     </div>
-                    <div className="flex bg-zinc-900/50 border border-white/5 rounded-2xl p-1 shrink-0">
-                        <button className="px-6 py-2.5 bg-white text-black rounded-xl font-bold text-sm transition-all shadow-lg shadow-white/20">Grid</button>
-                        <button className="px-6 py-2.5 text-gray-500 hover:text-white rounded-xl font-bold text-sm transition-all">List</button>
+                </div>
+
+                {category ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                        {filteredItems.map((item) => <ProductCard key={item._id} item={item} />)}
                     </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                    {items.map((item) => (
-                        <motion.div
-                            key={item.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            className="bg-zinc-950 rounded-[2rem] border border-white/5 overflow-hidden group hover:border-white/30 transition-all duration-500"
-                        >
-                            <div className="aspect-[4/3] overflow-hidden relative">
-                                <img
-                                    src={item.img}
-                                    alt={item.name}
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
-                                <div className="absolute top-6 right-6 z-10">
-                                    <div className="bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center space-x-1.5">
-                                        <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                                        <span className="text-white text-xs font-black">{item.rating}</span>
+                ) : (
+                    <div className="space-y-32">
+                        {groupedItems.map((group) => (
+                            <section key={group._id} className="relative">
+                                <div className="flex items-center justify-between mb-12">
+                                    <div className="flex items-center gap-6">
+                                        <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase italic">{group.name}</h2>
+                                        <div className="h-0.5 w-24 bg-white/20 hidden md:block" />
                                     </div>
+                                    <Link
+                                        to={`/frozen-items/${group.name.toLowerCase()}`}
+                                        className="text-gray-500 hover:text-white flex items-center gap-2 font-black uppercase text-xs tracking-widest transition-all group"
+                                    >
+                                        View All <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+                                    </Link>
                                 </div>
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-                            </div>
-
-                            <div className="p-8">
-                                <div className="flex justify-between items-start mb-4">
-                                    <h3 className="text-2xl font-bold text-white group-hover:text-gray-400 transition-colors">{item.name}</h3>
-                                    <span className="text-2xl font-black text-white tracking-tighter shrink-0 ml-4">
-                                        <span className="text-sm text-gray-500 font-bold mr-1">Rs.</span>
-                                        {item.price}
-                                    </span>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                                    {group.products.slice(0, 3).map((item) => (
+                                        <ProductCard key={item._id} item={item} />
+                                    ))}
                                 </div>
-                                <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                                    <div className="flex -space-x-2">
-                                        {[1, 2, 3].map(i => (
-                                            <div key={i} className="w-8 h-8 rounded-full border-2 border-zinc-950 bg-zinc-800" />
-                                        ))}
-                                        <div className="w-8 h-8 rounded-full border-2 border-zinc-950 bg-white text-black flex items-center justify-center text-[10px] font-black">+12</div>
-                                    </div>
-                                    <button className="flex items-center space-x-2 bg-white text-black px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-200 transition-all active:scale-95">
-                                        <Plus className="w-4 h-4" />
-                                        <span>Add to Cart</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+                            </section>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );

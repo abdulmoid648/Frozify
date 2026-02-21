@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Search, User, ShoppingCart, ChevronDown, Menu, X } from 'lucide-react';
+import { Search, User, ShoppingCart, ChevronDown, Menu, X, LogOut } from 'lucide-react';
 import logo from '../assets/logo.jpg';
+import { useAuth } from '../context/AuthContext';
+import { getCategories } from '../api/categoryService';
 
 const Navbar = () => {
+    const { user, logout } = useAuth();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isMobileDropdownOpen, setIsMobileDropdownOpen] = useState(false);
+    const [categories, setCategories] = useState([]);
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -15,7 +19,17 @@ const Navbar = () => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 20);
         };
+        const fetchCategories = async () => {
+            try {
+                const res = await getCategories();
+                setCategories(res.data);
+            } catch (err) {
+                console.error('Navbar category fetch failed', err);
+            }
+        };
+
         window.addEventListener('scroll', handleScroll);
+        fetchCategories();
         // Reset mobile menu on route change
         setIsMobileMenuOpen(false);
         setIsMobileDropdownOpen(false);
@@ -32,6 +46,11 @@ const Navbar = () => {
             }
         }
         setIsMobileMenuOpen(false);
+    };
+
+    const handleLogout = () => {
+        logout();
+        navigate('/');
     };
 
     // Effect to handle scrolling when navigating back to home from another page
@@ -90,21 +109,25 @@ const Navbar = () => {
                             onMouseLeave={() => setIsDropdownOpen(false)}
                         >
                             <div className="flex items-center text-gray-300 hover:text-white font-medium transition-colors py-2 cursor-pointer">
-                                <Link to="/frozen-items">Frozen Items</Link>
+                                <Link to="/frozen-items">Items</Link>
                                 <ChevronDown className={`ml-1.5 w-4 h-4 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
                             </div>
 
                             <div className={`absolute top-full left-0 w-52 pt-2 transition-all duration-300 origin-top ${isDropdownOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'}`}>
                                 <div className="bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] py-3 border border-white/10">
-                                    {frozenItems.map((item) => (
-                                        <Link
-                                            key={item}
-                                            to={`/frozen-items/${item.toLowerCase()}`}
-                                            className="block px-5 py-2.5 text-sm text-gray-400 hover:bg-white/5 hover:text-white transition-all font-medium"
-                                        >
-                                            {item}
-                                        </Link>
-                                    ))}
+                                    {categories.length > 0 ? (
+                                        categories.map((cat) => (
+                                            <Link
+                                                key={cat._id}
+                                                to={`/frozen-items/${cat.name.toLowerCase()}`}
+                                                className="block px-5 py-2.5 text-sm text-gray-400 hover:bg-white/5 hover:text-white transition-all font-medium"
+                                            >
+                                                {cat.name}
+                                            </Link>
+                                        ))
+                                    ) : (
+                                        <div className="px-5 py-2.5 text-xs text-gray-600 italic">No categories</div>
+                                    )}
                                     <div className="border-t border-white/5 my-2" />
                                     <button
                                         onClick={() => scrollToSection('menu')}
@@ -127,25 +150,52 @@ const Navbar = () => {
                         >
                             About Us
                         </button>
+
+                        {user?.role === 'admin' && (
+                            <Link to="/admin" className="text-white font-bold bg-white/10 px-4 py-2 rounded-full border border-white/20 hover:bg-white/20 transition-all">
+                                Admin
+                            </Link>
+                        )}
                     </div>
 
                     {/* Right Side: Actions */}
                     <div className="hidden md:flex items-center space-x-6">
-                        <button className="p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-all">
-                            <Search className="w-5 h-5" />
-                        </button>
-                        <Link to="/login" className="p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-all">
-                            <User className="w-5 h-5" />
-                        </Link>
-                        <button className="relative p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-all">
-                            <ShoppingCart className="w-5 h-5" />
-                            <span className="absolute top-1.5 right-1.5 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center border-2 border-black">
-                                3
-                            </span>
-                        </button>
-                        <Link to="/login" className="bg-white text-black px-6 py-2.5 rounded-full font-bold hover:bg-gray-100 transition-all shadow-xl active:scale-95">
-                            Login
-                        </Link>
+                        {user?.role !== 'admin' && (
+                            <>
+                                <button className="p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-all">
+                                    <Search className="w-5 h-5" />
+                                </button>
+
+                                <button className="relative p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-all">
+                                    <ShoppingCart className="w-5 h-5" />
+                                    <span className="absolute top-1.5 right-1.5 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center border-2 border-black">
+                                        0
+                                    </span>
+                                </button>
+                            </>
+                        )}
+
+                        {user ? (
+                            <div className="flex items-center space-x-4">
+                                <div className="flex items-center space-x-3 bg-zinc-900/50 border border-white/10 px-4 py-2 rounded-full cursor-pointer hover:border-white/30 transition-all">
+                                    <div className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center text-[10px] font-black uppercase">
+                                        {user.username.slice(0, 2)}
+                                    </div>
+                                    <span className="text-sm font-bold text-white capitalize">{user.username}</span>
+                                </div>
+                                <button
+                                    onClick={handleLogout}
+                                    className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-500/5 rounded-full transition-all"
+                                    title="Logout"
+                                >
+                                    <LogOut className="w-5 h-5" />
+                                </button>
+                            </div>
+                        ) : (
+                            <Link to="/login" className="bg-white text-black px-8 py-2.5 rounded-full font-bold hover:bg-gray-100 transition-all shadow-xl active:scale-95">
+                                Login
+                            </Link>
+                        )}
                     </div>
 
                     {/* Mobile Menu Button */}
@@ -175,8 +225,8 @@ const Navbar = () => {
                             <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${isMobileDropdownOpen ? 'rotate-180' : ''}`} />
                         </button>
                         <div className={`pl-8 space-y-1 transition-all duration-300 overflow-hidden ${isMobileDropdownOpen ? 'max-h-80 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
-                            {frozenItems.map(item => (
-                                <Link key={item} to={`/frozen-items/${item.toLowerCase()}`} className="block px-4 py-2.5 text-base text-gray-500 hover:text-white transition-colors">{item}</Link>
+                            {categories.map(cat => (
+                                <Link key={cat._id} to={`/frozen-items/${cat.name.toLowerCase()}`} className="block px-4 py-2.5 text-base text-gray-500 hover:text-white transition-colors">{cat.name}</Link>
                             ))}
                             <button
                                 onClick={() => scrollToSection('menu')}
@@ -199,23 +249,47 @@ const Navbar = () => {
                         About Us
                     </button>
 
+                    {user?.role === 'admin' && (
+                        <Link to="/admin" onClick={() => setIsMobileMenuOpen(false)} className="block px-4 py-3 text-lg font-bold text-white bg-white/5 border border-white/10 rounded-xl transition-all">
+                            Admin Dashboard
+                        </Link>
+                    )}
+
                     <div className="pt-8 flex flex-col space-y-4 px-4 border-t border-white/10 mt-4">
-                        <Link to="/login" className="w-full bg-white text-black px-6 py-4 rounded-2xl font-bold text-lg shadow-2xl active:scale-[0.98] transition-all text-center">Login</Link>
-                        <div className="flex items-center justify-center space-x-6 py-4">
-                            <Search className="w-6 h-6 text-gray-400" />
-                            <Link to="/login">
-                                <User className="w-6 h-6 text-gray-400" />
-                            </Link>
-                            <div className="relative">
-                                <ShoppingCart className="w-6 h-6 text-gray-400" />
-                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center">3</span>
+                        {user ? (
+                            <div className="space-y-4">
+                                <div className="flex items-center space-x-4 bg-zinc-900/50 p-4 rounded-2xl">
+                                    <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center font-black uppercase">
+                                        {user.username.slice(0, 2)}
+                                    </div>
+                                    <span className="font-bold text-white capitalize">{user.username}</span>
+                                </div>
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full bg-red-500/10 text-red-500 border border-red-500/20 px-6 py-4 rounded-2xl font-bold text-lg transition-all text-center"
+                                >
+                                    Logout
+                                </button>
                             </div>
-                        </div>
+                        ) : (
+                            <Link to="/login" className="w-full bg-white text-black px-6 py-4 rounded-2xl font-bold text-lg shadow-2xl active:scale-[0.98] transition-all text-center">Login</Link>
+                        )}
+
+                        {user?.role !== 'admin' && (
+                            <div className="flex items-center justify-center space-x-6 py-4">
+                                <Search className="w-6 h-6 text-gray-400" />
+                                <div className="relative">
+                                    <ShoppingCart className="w-6 h-6 text-gray-400" />
+                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center">0</span>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
         </nav>
     );
 };
+
 
 export default Navbar;
