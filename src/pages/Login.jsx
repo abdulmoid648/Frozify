@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { loginUser, registerUser } from '../api/authService';
 import { useAuth } from '../context/AuthContext';
 

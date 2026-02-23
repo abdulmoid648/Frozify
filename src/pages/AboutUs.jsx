@@ -27,7 +27,7 @@ const AboutUs = () => {
                         <img
                             src={logo}
                             alt="Logo"
-                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                            className="w-full h-full object-contain p-8 transition-transform duration-1000 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-white/5 mix-blend-overlay" />
                     </div>

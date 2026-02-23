@@ -179,16 +179,9 @@ const Home = () => {
                     transition={{ duration: 1, ease: "easeOut" }}
                     className="max-w-7xl mx-auto"
                 >
-                    <div className="text-center mb-24">
-                        <h1 className="text-6xl md:text-8xl font-black text-white mb-8 tracking-tighter uppercase italic">
-                            OUR <span className="text-gray-600">STORY</span>
-                        </h1>
-                        <p className="text-xl text-gray-500 max-w-2xl mx-auto font-medium leading-relaxed">
-                            Frozify was born from a simple mission: to preserve the soul of gourmet cooking in every frozen bite.
-                        </p>
-                    </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-32">
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-12">
                         <div className="space-y-8">
                             <h2 className="text-4xl font-black text-white tracking-tight">The Flash-Freeze Revolution</h2>
                             <p className="text-gray-400 text-lg leading-relaxed">
@@ -202,31 +195,12 @@ const Home = () => {
                             <img
                                 src={logo}
                                 alt="Logo"
-                                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                                className="w-full h-full object-contain p-8 transition-transform duration-1000 group-hover:scale-105"
                             />
                             <div className="absolute inset-0 bg-white/5 mix-blend-overlay" />
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                        {[
-                            { icon: Shield, title: "Zero Preservatives", desc: "Pure ingredients, preserved only by cold." },
-                            { icon: Users, title: "Artisanal Team", desc: "Hand-rolled with care by gourmet masters." },
-                            { icon: Heart, title: "Locally Sourced", desc: "Supporting local farmers and organic producers." },
-                            { icon: Globe, title: "Global Standards", desc: "International hygiene and quality certifications." }
-                        ].map((feature, i) => (
-                            <div
-                                key={i}
-                                className="bg-zinc-950 p-8 rounded-3xl border border-white/5 hover:border-white/30 transition-all hover:-translate-y-2"
-                            >
-                                <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6">
-                                    <feature.icon className="w-6 h-6 text-white" />
-                                </div>
-                                <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
-                                <p className="text-gray-500 text-sm">{feature.desc}</p>
-                            </div>
-                        ))}
-                    </div>
                 </motion.div>
             </section>
 
