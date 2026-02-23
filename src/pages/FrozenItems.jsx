@@ -138,8 +138,10 @@ const FrozenItems = () => {
                 <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6 border-b border-white/5 pb-16">
                     <div className="max-w-3xl">
                         <motion.h1
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
+                            initial={{ opacity: 0, x: 100 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 1, ease: "easeOut" }}
                             className="text-6xl md:text-8xl font-black text-white mb-6 tracking-tighter capitalize italic"
                         >
                             {category || 'ALL ITEMS'}
@@ -158,8 +160,15 @@ const FrozenItems = () => {
                     </div>
                 ) : (
                     <div className="space-y-32">
-                        {groupedItems.map((group) => (
-                            <section key={group._id} className="relative">
+                        {groupedItems.map((group, idx) => (
+                            <motion.section
+                                key={group._id}
+                                initial={{ opacity: 0, x: idx % 2 === 0 ? -100 : 100 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 1, ease: "easeOut" }}
+                                className="relative"
+                            >
                                 <div className="flex items-center justify-between mb-12">
                                     <div className="flex items-center gap-6">
                                         <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter uppercase italic">{group.name}</h2>
@@ -177,7 +186,7 @@ const FrozenItems = () => {
                                         <ProductCard key={item._id} item={item} />
                                     ))}
                                 </div>
-                            </section>
+                            </motion.section>
                         ))}
                     </div>
                 )}

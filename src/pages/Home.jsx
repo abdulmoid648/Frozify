@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, ArrowRight, Star, Shield, Zap, Users, Heart, Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import pattiesImg from '../assets/patties.png';
 import prathaImg from '../assets/pratha.png';
 import logo from '../assets/logo.jpg';
@@ -79,9 +80,10 @@ const Home = () => {
 
                 <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.8 }}
+                        initial={{ opacity: 0, x: 100 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1, ease: "easeOut" }}
                     >
                         <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-gray-400 text-xs font-black tracking-widest uppercase mb-8 inline-block">
                             Premium Frozen Snacks
@@ -95,13 +97,13 @@ const Home = () => {
                             Delivered fresh, preserved perfectly, tasted exceptionally.
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                            <button className="px-10 py-5 bg-white text-black rounded-full font-black text-lg text-black hover:bg-black hover:text-white transition-all shadow-[0_20px_40px_-10px_rgba(255,255,255,0.2)] active:scale-95 flex items-center group">
+                            <Link
+                                to="/frozen-items"
+                                className="px-10 py-5 bg-white text-black rounded-full font-black text-lg hover:bg-black hover:text-white transition-all shadow-[0_20px_40px_-10px_rgba(255,255,255,0.2)] active:scale-95 flex items-center group"
+                            >
                                 Order Now
                                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </button>
-                            <button className="px-10 py-5 bg-zinc-900 text-white rounded-full font-black text-lg border border-white/5 hover:bg-zinc-800 transition-all active:scale-95">
-                                Explore Menu
-                            </button>
+                            </Link>
                         </div>
                     </motion.div>
                 </div>
@@ -117,7 +119,13 @@ const Home = () => {
 
 
             <section id="menu" className="py-32 px-6 md:px-12 relative overflow-hidden bg-black">
-                <div className="max-w-7xl mx-auto relative">
+                <motion.div
+                    initial={{ opacity: 0, x: -100 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                    className="max-w-7xl mx-auto relative"
+                >
                     <div className="flex flex-col md:flex-row items-end justify-between mb-20 gap-8">
                         <div>
                             <span className="text-white font-black tracking-widest text-xs uppercase mb-4 block">Our Specialties</span>
@@ -181,20 +189,21 @@ const Home = () => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </section>
 
             <section id="about" className="py-32 px-6 md:px-12 bg-black border-t border-white/5">
-                <div className="max-w-7xl mx-auto">
+                <motion.div
+                    initial={{ opacity: 0, x: 100 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                    className="max-w-7xl mx-auto"
+                >
                     <div className="text-center mb-24">
-                        <motion.h1
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            className="text-6xl md:text-8xl font-black text-white mb-8 tracking-tighter"
-                        >
+                        <h1 className="text-6xl md:text-8xl font-black text-white mb-8 tracking-tighter uppercase italic">
                             OUR <span className="text-gray-600">STORY</span>
-                        </motion.h1>
+                        </h1>
                         <p className="text-xl text-gray-500 max-w-2xl mx-auto font-medium leading-relaxed">
                             Frozify was born from a simple mission: to preserve the soul of gourmet cooking in every frozen bite.
                         </p>
@@ -218,7 +227,6 @@ const Home = () => {
                             />
                             <div className="absolute inset-0 bg-white/5 mix-blend-overlay" />
                         </div>
-
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -228,12 +236,8 @@ const Home = () => {
                             { icon: Heart, title: "Locally Sourced", desc: "Supporting local farmers and organic producers." },
                             { icon: Globe, title: "Global Standards", desc: "International hygiene and quality certifications." }
                         ].map((feature, i) => (
-                            <motion.div
+                            <div
                                 key={i}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: i * 0.1 }}
                                 className="bg-zinc-950 p-8 rounded-3xl border border-white/5 hover:border-white/30 transition-all hover:-translate-y-2"
                             >
                                 <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center mb-6">
@@ -241,19 +245,25 @@ const Home = () => {
                                 </div>
                                 <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
                                 <p className="text-gray-500 text-sm">{feature.desc}</p>
-                            </motion.div>
+                            </div>
                         ))}
                     </div>
-                </div>
+                </motion.div>
             </section>
 
 
             {/* Newsletter/CTA Section */}
             <section className="py-32 px-6 md:px-12 text-center relative overflow-hidden">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[600px] bg-zinc-900/5 blur-[150px] rounded-full pointer-events-none" />
-                <div className="max-w-4xl mx-auto relative z-10">
-                    <h2 className="text-5xl md:text-8xl font-black mb-12 tracking-tighter">JOIN THE <br /><span className="bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent italic">REVOLUTION.</span></h2>
-                    <p className="text-gray-400 text-xl mb-12 max-w-2xl mx-auto font-medium">Stay updated with our latest flavors and exclusive offers delivered straight to your inbox.</p>
+                <motion.div
+                    initial={{ opacity: 0, x: -100 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1, ease: "easeOut" }}
+                    className="max-w-4xl mx-auto relative z-10"
+                >
+                    <h2 className="text-5xl md:text-8xl font-black mb-12 tracking-tighter uppercase italic">JOIN THE <br /><span className="text-gray-600">REVOLUTION.</span></h2>
+                    <p className="text-gray-400 text-xl mb-12 max-w-2xl mx-auto font-medium leading-relaxed">Stay updated with our latest flavors and exclusive offers delivered straight to your inbox.</p>
                     <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
                         <input
                             type="email"
@@ -264,7 +274,7 @@ const Home = () => {
                             Subscribe
                         </button>
                     </div>
-                </div>
+                </motion.div>
             </section>
         </div>
     );

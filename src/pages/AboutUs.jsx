@@ -6,8 +6,13 @@ import logo from '../assets/logo.jpg';
 const AboutUs = () => {
     return (
         <div className="pt-40 pb-24 px-6 md:px-12 min-h-screen bg-black">
-            <div className="max-w-7xl mx-auto">
-
+            <motion.div
+                initial={{ opacity: 0, x: 100 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, ease: "easeOut" }}
+                className="max-w-7xl mx-auto"
+            >
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-32">
                     <div className="space-y-8">
                         <h2 className="text-4xl font-black text-white tracking-tight">The Flash-Freeze Revolution</h2>
@@ -44,7 +49,7 @@ const AboutUs = () => {
                         </div>
                     ))}
                 </div>
-            </div>
+            </motion.div>
         </div>
     );
 };

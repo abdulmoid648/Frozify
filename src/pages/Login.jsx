@@ -54,7 +54,12 @@ const Login = () => {
     };
 
     return (
-        <div className="pt-40 pb-24 px-6 md:px-12 min-h-screen flex items-center justify-center bg-black">
+        <motion.div
+            initial={{ opacity: 0, x: -100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="pt-40 pb-24 px-6 md:px-12 min-h-screen flex items-center justify-center bg-black w-full"
+        >
             <div className="w-full max-w-md bg-zinc-900 rounded-[2.5rem] border border-white/5 p-10 md:p-12 shadow-2xl">
                 <h2 className="text-3xl font-black text-white mb-8 text-center italic tracking-tight uppercase">
                     {isLogin ? 'Welcome Back' : 'Create Account'}
@@ -124,7 +129,7 @@ const Login = () => {
                     </button>
                 </p>
             </div>
-        </div>
+        </motion.div>
     );
 };
 

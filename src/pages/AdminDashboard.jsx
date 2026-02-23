@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Edit2, Trash2, Package, TrendingUp, Users, Banknote, X, Check, AlertCircle, LayoutGrid, Layers } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { getProducts, createProduct, updateProduct, deleteProduct, uploadImage } from '../api/productService';
 import { getCategories, createCategory, deleteCategory } from '../api/categoryService';
 import { useAuth } from '../context/AuthContext';
@@ -199,7 +200,12 @@ const AdminDashboard = () => {
         <div className="pt-32 pb-24 px-6 md:px-12 bg-black min-h-screen text-white">
             <div className="max-w-7xl mx-auto">
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8 }}
+                    className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6"
+                >
                     <div>
                         <h1 className="text-4xl font-black italic tracking-tighter uppercase mb-2">Admin Dashboard</h1>
                         <p className="text-gray-500 font-medium">Welcome back, <span className="text-white capitalize">{user?.username}</span></p>
@@ -212,7 +218,7 @@ const AdminDashboard = () => {
                             <Plus size={20} /> Add Product
                         </button>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Tabs */}
                 <div className="flex gap-6 mb-8 border-b border-white/5">
@@ -231,7 +237,12 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <motion.div
+                    initial={{ opacity: 0, x: 100 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+                >
                     {stats.map((stat, idx) => (
                         <div key={idx} className="bg-zinc-900/50 border border-white/5 rounded-3xl p-8 flex items-center gap-6">
                             <div className={`p-4 rounded-2xl bg-white/5 ${stat.color}`}>
@@ -243,7 +254,7 @@ const AdminDashboard = () => {
                             </div>
                         </div>
                     ))}
-                </div>
+                </motion.div>
 
                 {/* Status Messages */}
                 {success && (
@@ -258,7 +269,11 @@ const AdminDashboard = () => {
                 )}
 
                 {activeTab === 'products' ? (
-                    <>
+                    <motion.div
+                        initial={{ opacity: 0, x: -100 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
+                    >
                         {/* Stats Grid */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                             {stats.map((stat, idx) => (
@@ -330,9 +345,14 @@ const AdminDashboard = () => {
                                 </table>
                             </div>
                         </div>
-                    </>
+                    </motion.div>
                 ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <motion.div
+                        initial={{ opacity: 0, x: -100 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8, delay: 0.4 }}
+                        className="grid grid-cols-1 lg:grid-cols-3 gap-12"
+                    >
                         {/* Category Form */}
                         <div className="lg:col-span-1">
                             <div className="bg-zinc-900/50 border border-white/10 rounded-[2.5rem] p-8">
@@ -399,7 +419,7 @@ const AdminDashboard = () => {
                                 </table>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 )}
 
                 {/* Add/Edit Modal */}
