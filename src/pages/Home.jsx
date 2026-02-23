@@ -4,70 +4,49 @@ import { ChevronLeft, ChevronRight, ArrowRight, Star, Shield, Zap, Users, Heart,
 import { Link } from 'react-router-dom';
 import pattiesImg from '../assets/patties.png';
 import prathaImg from '../assets/pratha.png';
+import samosaImg from '../assets/samosa.png';
+import shamiImg from '../assets/Shami.png';
+import koftaImg from '../assets/Kofta.png';
 import logo from '../assets/logo.jpg';
 
 const Home = () => {
-    const [activeIndex, setActiveIndex] = useState(0);
-    const [itemsPerPage, setItemsPerPage] = useState(3);
-
-    const services = [
+    // Selection of items for the continuous carousel
+    const featuredItems = [
         {
-            title: "Gourmet Patties",
-            description: "Flash-frozen at peak freshness to lock in every bit of flavor and nutrition.",
+            title: "Crispy Samosa",
+            description: "Traditional tea-time favorite with a perfectly spiced filling and flaky crust.",
+            img: samosaImg,
+            color: "from-orange-500/20"
+        },
+        {
+            title: "Shami Kabab",
+            description: "Melt-in-your-mouth minced meat patties with authentic herbal notes.",
+            img: shamiImg,
+            color: "from-red-500/20"
+        },
+        {
+            title: "Gourmet Kofta",
+            description: "Tender, seasoned meatballs prepared using age-old family recipes.",
+            img: koftaImg,
+            color: "from-amber-500/20"
+        },
+        {
+            title: "Premium Patties",
+            description: "Flash-frozen at peak freshness to lock in every bit of flavor.",
             img: pattiesImg,
             color: "from-blue-500/20"
         },
         {
             title: "Frozen Pratha",
-            description: "Handcrafted by gourmet chefs using only the finest organic ingredients.",
+            description: "Handcrafted using only the finest organic ingredients and pure ghee.",
             img: prathaImg,
             color: "from-indigo-500/20"
-        },
-        {
-            title: "Smart Delivery",
-            description: "Climate-controlled shipping ensures your treats arrive perfectly frozen.",
-            img: "https://images.unsplash.com/photo-1633501053847-482403986b6a?auto=format&fit=crop&q=80&w=800",
-            color: "from-purple-500/20"
-        },
-        {
-            title: "Eco Packaging",
-            description: "Sustainable materials that keep your food cold and our planet green.",
-            img: "https://images.unsplash.com/photo-1605600611284-195209f0ea67?auto=format&fit=crop&q=80&w=800",
-            color: "from-green-500/20"
-        },
-        {
-            title: "Global Flavors",
-            description: "Unique and exotic flavors inspired by global culinary traditions.",
-            img: "https://images.unsplash.com/photo-1551024601-bec78aea70dd?auto=format&fit=crop&q=80&w=800",
-            color: "from-pink-500/20"
         }
     ];
 
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth < 768) {
-                setItemsPerPage(1);
-            } else if (window.innerWidth < 1024) {
-                setItemsPerPage(2);
-            } else {
-                setItemsPerPage(3);
-            }
-        };
+    // Double the items for seamless infinite scroll
+    const scrollItems = [...featuredItems, ...featuredItems];
 
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    const maxIndex = services.length - itemsPerPage;
-
-    const nextSlide = () => {
-        setActiveIndex(prev => (prev < maxIndex ? prev + 1 : 0));
-    };
-
-    const prevSlide = () => {
-        setActiveIndex(prev => (prev > 0 ? prev - 1 : maxIndex));
-    };
 
     return (
         <div className="bg-black text-white">
@@ -108,7 +87,17 @@ const Home = () => {
                     </motion.div>
                 </div>
 
-                {/* Floating Image Decoration (Optional) */}
+                {/* Floating Image Decorations */}
+                <motion.img
+                    src={samosaImg}
+                    className="absolute top-20 left-10 w-[300px] opacity-20 blur-[2px] pointer-events-none hidden lg:block"
+                    animate={{
+                        y: [0, 30, 0],
+                        rotate: [0, -10, 0],
+                        scale: [1, 1.05, 1]
+                    }}
+                    transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                />
                 <motion.img
                     src={pattiesImg}
                     className="absolute -bottom-20 -right-20 w-[600px] opacity-20 blur-sm pointer-events-none hidden lg:block"
@@ -134,60 +123,50 @@ const Home = () => {
                         <p className="text-gray-500 max-w-sm font-medium">A curated selection of our most popular frozen snacks, ready to heat and eat.</p>
                     </div>
 
-                    <div className="relative">
-                        {/* Navigation Arrows */}
-                        <button
-                            onClick={prevSlide}
-                            className="absolute -left-4 md:-left-8 top-[40%] -translate-y-1/2 z-30 bg-white/5 hover:bg-white hover:text-black p-4 rounded-full border border-white/10 transition-all active:scale-95 group backdrop-blur-md"
-                            aria-label="Previous slide"
+                    <div className="relative overflow-hidden py-10">
+                        <motion.div
+                            className="flex gap-8"
+                            animate={{ x: ["0%", "-50%"] }}
+                            transition={{
+                                x: {
+                                    repeat: Infinity,
+                                    repeatType: "loop",
+                                    duration: 30,
+                                    ease: "linear",
+                                },
+                            }}
+                            style={{ width: "fit-content" }}
                         >
-                            <ChevronLeft className="w-6 h-6" />
-                        </button>
-                        <button
-                            onClick={nextSlide}
-                            className="absolute -right-4 md:-right-8 top-[40%] -translate-y-1/2 z-30 bg-white/5 hover:bg-white hover:text-black p-4 rounded-full border border-white/10 transition-all active:scale-95 group backdrop-blur-md"
-                            aria-label="Next slide"
-                        >
-                            <ChevronRight className="w-6 h-6" />
-                        </button>
-
-                        <div className="overflow-visible">
-                            <div
-                                className="carousel-track py-8"
-                                style={{
-                                    transform: `translateX(-${activeIndex * (100 / itemsPerPage)}%)`,
-                                    transition: 'transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
-                                }}
-                            >
-                                {services.map((service, idx) => (
-                                    <div
-                                        key={idx}
-                                        style={{ flex: `0 0 ${100 / itemsPerPage}%` }}
-                                        className="px-4 group"
-                                    >
-                                        <div className={`relative aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-white/5 bg-gradient-to-br ${service.color} to-transparent mb-8 transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)]`}>
-                                            <div className="absolute inset-0">
-                                                <img
-                                                    src={service.img}
-                                                    alt={service.title}
-                                                    className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110"
-                                                />
-                                            </div>
-                                            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black to-transparent z-10" />
-                                            <div className="absolute bottom-10 left-10 z-20">
-                                                <h3 className="text-3xl font-black text-white mb-2 leading-tight">{service.title}</h3>
-                                                <button className="text-white font-bold flex items-center text-sm opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0">
-                                                    View Product <ArrowRight className="ml-2 w-4 h-4" />
-                                                </button>
-                                            </div>
+                            {scrollItems.map((item, idx) => (
+                                <div
+                                    key={idx}
+                                    className="w-[350px] md:w-[450px] flex-shrink-0 group"
+                                >
+                                    <div className={`relative aspect-[4/5] rounded-[2.5rem] overflow-hidden border border-white/5 bg-gradient-to-br ${item.color} to-transparent mb-8 transition-all duration-500 group-hover:-translate-y-4 group-hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)]`}>
+                                        <div className="absolute inset-0">
+                                            <img
+                                                src={item.img}
+                                                alt={item.title}
+                                                className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110"
+                                            />
                                         </div>
-                                        <p className="text-gray-500 font-medium leading-relaxed px-4">
-                                            {service.description}
-                                        </p>
+                                        <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black to-transparent z-10" />
+                                        <div className="absolute bottom-10 left-10 z-20">
+                                            <h3 className="text-3xl font-black text-white mb-2 leading-tight uppercase italic">{item.title}</h3>
+                                            <Link
+                                                to="/frozen-items"
+                                                className="text-white font-bold flex items-center text-sm opacity-0 group-hover:opacity-100 transition-all transform translate-y-4 group-hover:translate-y-0"
+                                            >
+                                                Order Now <ArrowRight className="ml-2 w-4 h-4" />
+                                            </Link>
+                                        </div>
                                     </div>
-                                ))}
-                            </div>
-                        </div>
+                                    <p className="text-gray-500 font-medium leading-relaxed px-4">
+                                        {item.description}
+                                    </p>
+                                </div>
+                            ))}
+                        </motion.div>
                     </div>
                 </motion.div>
             </section>
