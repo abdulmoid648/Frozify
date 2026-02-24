@@ -186,7 +186,8 @@ const AdminDashboard = () => {
     const getImageUrl = (imagePath) => {
         if (!imagePath || imagePath === 'no-photo.jpg' || imagePath === '') return null;
         if (imagePath.startsWith('http')) return imagePath;
-        return `http://localhost:5000${imagePath}`;
+        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        return `${baseUrl}${imagePath}`;
     };
 
     const stats = [

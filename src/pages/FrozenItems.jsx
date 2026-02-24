@@ -46,7 +46,8 @@ const FrozenItems = () => {
             return `https://images.unsplash.com/photo-1601050638917-3f048d0a0b6d?auto=format&fit=crop&q=80&w=400`;
         }
         if (imagePath.startsWith('http')) return imagePath;
-        return `http://localhost:5000${imagePath}`;
+        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        return `${baseUrl}${imagePath}`;
     };
 
     // Filter items by category if one is specified in the URL

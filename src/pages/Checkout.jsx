@@ -160,7 +160,7 @@ const Checkout = () => {
                                                 <div key={item._id} className="flex gap-6 items-center border-b border-white/5 pb-8 last:border-0 last:pb-0">
                                                     <div className="w-24 h-24 rounded-2xl overflow-hidden bg-zinc-900 shrink-0 border border-white/10">
                                                         <img
-                                                            src={item.image.startsWith('http') ? item.image : `http://localhost:5000${item.image}`}
+                                                            src={item.image.startsWith('http') ? item.image : `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}${item.image}`}
                                                             alt={item.name}
                                                             className="w-full h-full object-cover"
                                                         />
