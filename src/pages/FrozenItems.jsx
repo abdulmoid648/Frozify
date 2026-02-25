@@ -4,9 +4,11 @@ import { useParams, Link } from 'react-router-dom';
 import { ShoppingCart, Plus, Star, Loader2, ChevronRight } from 'lucide-react';
 import { getProducts } from '../api/productService';
 import { getCategories } from '../api/categoryService';
+import { useCart } from '../context/CartContext';
 
 const FrozenItems = () => {
     const { category } = useParams();
+    const { addToCart } = useCart();
     const [items, setItems] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -124,7 +126,10 @@ const FrozenItems = () => {
                             <div key={i} className="w-8 h-8 rounded-full border-2 border-zinc-950 bg-zinc-800" />
                         ))}
                     </div>
-                    <button className="flex items-center space-x-2 bg-white text-black px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-200 transition-all active:scale-95 shadow-lg shadow-white/10">
+                    <button
+                        onClick={() => addToCart(item)}
+                        className="flex items-center space-x-2 bg-white text-black px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-gray-200 transition-all active:scale-95 shadow-lg shadow-white/10"
+                    >
                         <Plus className="w-4 h-4" />
                         <span>Add To Cart</span>
                     </button>

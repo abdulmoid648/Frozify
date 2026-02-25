@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { createOrder } from '../api/orderService';
 
 const Checkout = () => {
-    const { cart, removeFromCart, updateQty, cartTotal, clearCart } = useCart();
+    const { cartItems, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
     const { user } = useAuth();
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
@@ -20,7 +20,7 @@ const Checkout = () => {
 
     const handleNext = () => {
         if (step === 1) {
-            if (cart.length === 0) return;
+            if (cartItems.length === 0) return;
             setStep(2);
         } else if (step === 2) {
             if (!shippingData.address || !shippingData.city || !shippingData.phone) return;
@@ -37,7 +37,7 @@ const Checkout = () => {
         try {
             // 1. Create order in Database
             const orderData = {
-                orderItems: cart.map(item => ({
+                orderItems: cartItems.map(item => ({
                     name: item.name,
                     qty: item.qty,
                     image: item.image,
@@ -61,7 +61,7 @@ const Checkout = () => {
 
                 // 2. Construct WhatsApp Message
                 const adminNumber = "923704152383"; // Replace with actual admin number
-                const itemsText = cart.map(item => `• ${item.name} (${item.qty} x Rs.${item.price}) = Rs.${item.qty * item.price}`).join('\n');
+                const itemsText = cartItems.map(item => `• ${item.name} (${item.qty} x Rs.${item.price}) = Rs.${item.qty * item.price}`).join('\n');
 
                 const message = `*NEW ORDER FROM FROZIFY* 🍦\n\n` +
                     `*Order ID:* ${orderId}\n` +
@@ -88,7 +88,7 @@ const Checkout = () => {
         }
     };
 
-    if (cart.length === 0 && step === 1) {
+    if (cartItems.length === 0 && step === 1) {
         return (
             <div className="min-h-screen bg-black pt-40 px-6 flex flex-col items-center justify-center text-center">
                 <div className="w-24 h-24 bg-zinc-900 rounded-full flex items-center justify-center mb-8 border border-white/5">
@@ -156,7 +156,7 @@ const Checkout = () => {
                                             REVIEW YOUR ORDER
                                         </h2>
                                         <div className="space-y-8">
-                                            {cart.map((item) => (
+                                            {cartItems.map((item) => (
                                                 <div key={item._id} className="flex gap-6 items-center border-b border-white/5 pb-8 last:border-0 last:pb-0">
                                                     <div className="w-24 h-24 rounded-2xl overflow-hidden bg-zinc-900 shrink-0 border border-white/10">
                                                         <img
@@ -177,9 +177,9 @@ const Checkout = () => {
                                                         </div>
                                                         <div className="flex justify-between items-end">
                                                             <div className="flex items-center bg-black border border-white/10 rounded-full px-2 py-1">
-                                                                <button onClick={() => updateQty(item._id, item.qty - 1)} className="p-1 hover:text-white text-gray-500"><Minus className="w-4 h-4" /></button>
+                                                                <button onClick={() => updateQuantity(item._id, item.qty - 1)} className="p-1 hover:text-white text-gray-500"><Minus className="w-4 h-4" /></button>
                                                                 <span className="w-8 text-center text-white font-black text-sm">{item.qty}</span>
-                                                                <button onClick={() => updateQty(item._id, item.qty + 1)} className="p-1 hover:text-white text-gray-500"><Plus className="w-4 h-4" /></button>
+                                                                <button onClick={() => updateQuantity(item._id, item.qty + 1)} className="p-1 hover:text-white text-gray-500"><Plus className="w-4 h-4" /></button>
                                                             </div>
                                                             <p className="text-white font-black">Rs. {item.price * item.qty}</p>
                                                         </div>
@@ -289,7 +289,7 @@ const Checkout = () => {
                                             </div>
                                             <div className="flex justify-between items-center text-sm">
                                                 <span className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">TOTAL ITEMS</span>
-                                                <span className="text-white font-black">{cart.length}</span>
+                                                <span className="text-white font-black">{cartItems.length}</span>
                                             </div>
                                         </div>
 

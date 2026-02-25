@@ -3,10 +3,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Search, User, ShoppingCart, ChevronDown, Menu, X, LogOut } from 'lucide-react';
 import logo from '../assets/logo.jpg';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { getCategories } from '../api/categoryService';
 
 const Navbar = () => {
     const { user, logout } = useAuth();
+    const { cartItemsCount } = useCart();
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -166,12 +168,12 @@ const Navbar = () => {
                                     <Search className="w-5 h-5" />
                                 </button>
 
-                                <button className="relative p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-all">
+                                <Link to="/checkout" className="relative p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-all">
                                     <ShoppingCart className="w-5 h-5" />
                                     <span className="absolute top-1.5 right-1.5 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center border-2 border-black">
-                                        0
+                                        {cartItemsCount}
                                     </span>
-                                </button>
+                                </Link>
                             </>
                         )}
 
@@ -278,10 +280,10 @@ const Navbar = () => {
                         {user?.role !== 'admin' && (
                             <div className="flex items-center justify-center space-x-6 py-4">
                                 <Search className="w-6 h-6 text-gray-400" />
-                                <div className="relative">
+                                <Link to="/checkout" className="relative">
                                     <ShoppingCart className="w-6 h-6 text-gray-400" />
-                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center">0</span>
-                                </div>
+                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center">{cartItemsCount}</span>
+                                </Link>
                             </div>
                         )}
                     </div>
