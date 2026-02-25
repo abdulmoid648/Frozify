@@ -198,8 +198,18 @@ const Navbar = () => {
                         )}
                     </div>
 
-                    {/* Mobile Menu Button */}
-                    <div className="md:hidden flex items-center">
+                    {/* Mobile: Cart + Hamburger - always visible */}
+                    <div className="md:hidden flex items-center space-x-2">
+                        {user?.role !== 'admin' && (
+                            <Link to="/checkout" className="relative p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-all">
+                                <ShoppingCart className="w-5 h-5" />
+                                {cartItemsCount > 0 && (
+                                    <span className="absolute top-1.5 right-1.5 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center border-2 border-black">
+                                        {cartItemsCount}
+                                    </span>
+                                )}
+                            </Link>
+                        )}
                         <button
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             className="p-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all"
@@ -275,15 +285,6 @@ const Navbar = () => {
                             <Link to="/login" className="w-full bg-white text-black px-6 py-4 rounded-2xl font-bold text-lg shadow-2xl active:scale-[0.98] transition-all text-center">Login</Link>
                         )}
 
-                        {user?.role !== 'admin' && (
-                            <div className="flex items-center justify-center space-x-6 py-4">
-                                <Search className="w-6 h-6 text-gray-400" />
-                                <Link to="/checkout" className="relative">
-                                    <ShoppingCart className="w-6 h-6 text-gray-400" />
-                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center">{cartItemsCount}</span>
-                                </Link>
-                            </div>
-                        )}
                     </div>
                 </div>
             </div>
