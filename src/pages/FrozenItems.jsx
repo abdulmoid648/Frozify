@@ -6,9 +6,83 @@ import { getProducts } from '../api/productService';
 import { getCategories } from '../api/categoryService';
 import { useCart } from '../context/CartContext';
 
+// ProductCard must be OUTSIDE FrozenItems so React doesn't remount it on every render
+const ProductCard = ({ item, getImageUrl }) => {
+    const { addToCart } = useCart();
+    const [added, setAdded] = useState(false);
+
+    const handleAddToCart = () => {
+        addToCart(item);
+        setAdded(true);
+        setTimeout(() => setAdded(false), 1500);
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-zinc-950 rounded-[2rem] border border-white/5 overflow-hidden group hover:border-white/30 transition-all duration-500 h-full"
+        >
+            <div className="aspect-[4/3] overflow-hidden relative">
+                <img
+                    src={getImageUrl(item.image)}
+                    alt={item.name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+                <div className="absolute top-6 right-6 z-10">
+                    <div className="bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center space-x-1.5">
+                        <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
+                        <span className="text-white text-xs font-black">4.8</span>
+                    </div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
+            </div>
+
+            <div className="p-8">
+                <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-2xl font-bold text-white group-hover:text-gray-400 transition-colors uppercase tracking-tight">{item.name}</h3>
+                    <span className="text-2xl font-black text-white tracking-tighter shrink-0 ml-4">
+                        <span className="text-sm text-gray-500 font-bold mr-1">Rs.</span>
+                        {item.price}
+                    </span>
+                </div>
+                <p className="text-gray-500 text-sm line-clamp-2 mb-6">
+                    {item.description}
+                </p>
+                <div className="flex items-center justify-between pt-6 border-t border-white/5">
+                    <div className="flex -space-x-2">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="w-8 h-8 rounded-full border-2 border-zinc-950 bg-zinc-800" />
+                        ))}
+                    </div>
+                    <button
+                        onClick={handleAddToCart}
+                        className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 active:scale-95 shadow-lg ${added
+                                ? 'bg-green-500 text-white shadow-green-500/20 scale-105'
+                                : 'bg-white text-black hover:bg-gray-200 shadow-white/10'
+                            }`}
+                    >
+                        {added ? (
+                            <>
+                                <CheckCircle className="w-4 h-4" />
+                                <span>Added!</span>
+                            </>
+                        ) : (
+                            <>
+                                <Plus className="w-4 h-4" />
+                                <span>Add To Cart</span>
+                            </>
+                        )}
+                    </button>
+                </div>
+            </div>
+        </motion.div>
+    );
+};
+
 const FrozenItems = () => {
     const { category } = useParams();
-    const { addToCart } = useCart();
     const [items, setItems] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -86,81 +160,6 @@ const FrozenItems = () => {
         );
     }
 
-    const ProductCard = ({ item }) => {
-        const [added, setAdded] = React.useState(false);
-
-        const handleAddToCart = () => {
-            addToCart(item);
-            setAdded(true);
-            setTimeout(() => setAdded(false), 1500);
-        };
-
-        return (
-            <motion.div
-                key={item._id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-zinc-950 rounded-[2rem] border border-white/5 overflow-hidden group hover:border-white/30 transition-all duration-500 h-full"
-            >
-                <div className="aspect-[4/3] overflow-hidden relative">
-                    <img
-                        src={getImageUrl(item.image)}
-                        alt={item.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute top-6 right-6 z-10">
-                        <div className="bg-black/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10 flex items-center space-x-1.5">
-                            <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-                            <span className="text-white text-xs font-black">4.8</span>
-                        </div>
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-60" />
-                </div>
-
-                <div className="p-8">
-                    <div className="flex justify-between items-start mb-4">
-                        <h3 className="text-2xl font-bold text-white group-hover:text-gray-400 transition-colors uppercase tracking-tight">{item.name}</h3>
-                        <span className="text-2xl font-black text-white tracking-tighter shrink-0 ml-4">
-                            <span className="text-sm text-gray-500 font-bold mr-1">Rs.</span>
-                            {item.price}
-                        </span>
-                    </div>
-                    <p className="text-gray-500 text-sm line-clamp-2 mb-6">
-                        {item.description}
-                    </p>
-                    <div className="flex items-center justify-between pt-6 border-t border-white/5">
-                        <div className="flex -space-x-2">
-                            {[1, 2, 3].map(i => (
-                                <div key={i} className="w-8 h-8 rounded-full border-2 border-zinc-950 bg-zinc-800" />
-                            ))}
-                        </div>
-                        <button
-                            onClick={handleAddToCart}
-                            className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 active:scale-95 shadow-lg ${added
-                                ? 'bg-green-500 text-white shadow-green-500/20 scale-105'
-                                : 'bg-white text-black hover:bg-gray-200 shadow-white/10'
-                                }`}
-                        >
-                            {added ? (
-                                <>
-                                    <CheckCircle className="w-4 h-4" />
-                                    <span>Added!</span>
-                                </>
-                            ) : (
-                                <>
-                                    <Plus className="w-4 h-4" />
-                                    <span>Add To Cart</span>
-                                </>
-                            )}
-                        </button>
-                    </div>
-                </div>
-            </motion.div>
-        );
-    };
-
-
     return (
         <div className="pt-40 pb-24 px-6 md:px-12 min-h-screen bg-black">
             <div className="max-w-7xl mx-auto">
@@ -185,7 +184,7 @@ const FrozenItems = () => {
 
                 {category ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                        {filteredItems.map((item) => <ProductCard key={item._id} item={item} />)}
+                        {filteredItems.map((item) => <ProductCard key={item._id} item={item} getImageUrl={getImageUrl} />)}
                     </div>
                 ) : (
                     <div className="space-y-32">
@@ -212,7 +211,7 @@ const FrozenItems = () => {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                                     {group.products.slice(0, 3).map((item) => (
-                                        <ProductCard key={item._id} item={item} />
+                                        <ProductCard key={item._id} item={item} getImageUrl={getImageUrl} />
                                     ))}
                                 </div>
                             </motion.section>
