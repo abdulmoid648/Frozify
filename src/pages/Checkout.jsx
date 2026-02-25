@@ -14,16 +14,16 @@ const Checkout = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [shippingData, setShippingData] = useState({
         address: '',
-        city: '',
         phone: ''
     });
+    const selectedCity = localStorage.getItem('frozify_city') || 'Khanewal';
 
     const handleNext = () => {
         if (step === 1) {
             if (cartItems.length === 0) return;
             setStep(2);
         } else if (step === 2) {
-            if (!shippingData.address || !shippingData.city || !shippingData.phone) return;
+            if (!shippingData.address || !shippingData.phone) return;
             setStep(3);
         }
     };
@@ -46,9 +46,9 @@ const Checkout = () => {
                 })),
                 shippingAddress: {
                     address: shippingData.address,
-                    city: shippingData.city,
+                    city: selectedCity,
                     phone: shippingData.phone,
-                    postalCode: 'N/A' // Added default since model might still have it
+                    postalCode: 'N/A'
                 },
                 paymentMethod: 'WhatsApp',
                 totalPrice: cartTotal
@@ -221,26 +221,21 @@ const Checkout = () => {
                                                     className="w-full bg-black border border-white/10 rounded-3xl p-6 text-white focus:outline-none focus:border-white/40 transition-all resize-none h-32 text-lg"
                                                 />
                                             </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                                <div className="space-y-2">
-                                                    <label className="text-xs font-black text-gray-500 uppercase tracking-widest pl-4">City</label>
-                                                    <input
-                                                        type="text"
-                                                        value={shippingData.city}
-                                                        onChange={(e) => setShippingData({ ...shippingData, city: e.target.value })}
-                                                        placeholder="e.g. Lahore"
-                                                        className="w-full bg-black border border-white/10 rounded-2xl p-6 text-white text-lg focus:outline-none focus:border-white/40 transition-all"
-                                                    />
-                                                </div>
-                                                <div className="space-y-2">
-                                                    <label className="text-xs font-black text-gray-500 uppercase tracking-widest pl-4">Phone Number</label>
-                                                    <input
-                                                        type="tel"
-                                                        value={shippingData.phone}
-                                                        onChange={(e) => setShippingData({ ...shippingData, phone: e.target.value })}
-                                                        placeholder="03XXXXXXXXX"
-                                                        className="w-full bg-black border border-white/10 rounded-2xl p-6 text-white text-lg focus:outline-none focus:border-white/40 transition-all"
-                                                    />
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-black text-gray-500 uppercase tracking-widest pl-4">Phone Number</label>
+                                                <input
+                                                    type="tel"
+                                                    value={shippingData.phone}
+                                                    onChange={(e) => setShippingData({ ...shippingData, phone: e.target.value })}
+                                                    placeholder="03XXXXXXXXX"
+                                                    className="w-full bg-black border border-white/10 rounded-2xl p-6 text-white text-lg focus:outline-none focus:border-white/40 transition-all"
+                                                />
+                                            </div>
+                                            <div className="flex items-center gap-3 bg-black/40 border border-white/5 rounded-2xl px-6 py-4">
+                                                <MapPin className="w-5 h-5 text-gray-500 shrink-0" />
+                                                <div>
+                                                    <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Delivering to</p>
+                                                    <p className="text-white font-black">{selectedCity}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -255,7 +250,7 @@ const Checkout = () => {
                                         </button>
                                         <button
                                             onClick={handleNext}
-                                            disabled={!shippingData.address || !shippingData.city || !shippingData.phone}
+                                            disabled={!shippingData.address || !shippingData.phone}
                                             className="flex-[2] bg-white text-black py-6 rounded-[2rem] font-black text-xl hover:bg-gray-200 transition-all flex items-center justify-center gap-3 disabled:opacity-30 disabled:grayscale"
                                         >
                                             NEXT: CONFIRMATION

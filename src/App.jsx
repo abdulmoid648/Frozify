@@ -14,6 +14,7 @@ import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
 import { useAuth } from './context/AuthContext';
 import SplashScreen from './components/SplashScreen';
+import CitySelector from './components/CitySelector';
 
 const ProtectedRoute = ({ children, isAdminRequired = false }) => {
   const { user, loading } = useAuth();
@@ -82,6 +83,11 @@ const AnimatedRoutes = () => {
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const [citySelected, setCitySelected] = useState(!!localStorage.getItem('frozify_city'));
+
+  const handleCitySelect = (city) => {
+    setCitySelected(true);
+  };
 
   return (
     <Router>
@@ -91,9 +97,12 @@ export default function App() {
             {showSplash && (
               <SplashScreen finishLoading={() => setShowSplash(false)} />
             )}
+            {!showSplash && !citySelected && (
+              <CitySelector onCitySelect={handleCitySelect} />
+            )}
           </AnimatePresence>
 
-          <div className={`min-h-screen bg-black text-white selection:bg-white/20 flex flex-col transition-opacity duration-1000 ${showSplash ? 'opacity-0' : 'opacity-100'}`}>
+          <div className={`min-h-screen bg-black text-white selection:bg-white/20 flex flex-col transition-opacity duration-1000 ${showSplash || !citySelected ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
             {!showSplash && (
               <>
                 <Navbar />
